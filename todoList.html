@@ -11,6 +11,7 @@
       padding: 0;
       list-style: none;
       font-weight: bold;
+      text-align: center;
     }
     html,body{
       width: 100%;
@@ -20,6 +21,14 @@
     }
     #app button{
       margin: 0 10px;
+      border-radius: 10px;
+      padding: 5px;
+    }
+    .bgRed,
+    .bgGreen,
+    .bgYellow{
+      border-radius: 30px;
+      color: #fff;
     }
     .bgRed{
       background-color: red;
@@ -30,6 +39,9 @@
     .bgYellow{
       background-color: yellow;
     }
+    #app{
+      padding-top: 20px;
+    }
     #app ul{
       display: flex;
       flex-direction: row;
@@ -39,8 +51,8 @@
     #app ul li{
       margin-right: 100px;
       width: 100px;
-      text-align: center;
-      height: 20px;
+      height: 30px;
+      line-height: 30px;
     }
 
     #app ul:first-child li{
