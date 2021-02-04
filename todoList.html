@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.12/vue.min.js' integrity='sha512-BKbSR+cfyxLdMAsE0naLReFSLg8/pjbgfxHh/k/kUC82Hy7r6HtR5hLhobaln2gcTvzkyyehrdREdjpsQwy2Jw==' crossorigin='anonymous'></script>
+  <title>Document</title>
+  <style lang='scss'>
+    *{
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-weight: bold;
+    }
+    html,body{
+      width: 100%;
+    }
+    #app{
+      background: linear-gradient(10deg, #70e1f5, #ffd194);
+    }
+    #app button{
+      margin: 0 10px;
+    }
+    .bgRed{
+      background-color: red;
+    }
+    .bgGreen{
+      background-color: green;
+    }
+    .bgYellow{
+      background-color: yellow;
+    }
+    #app ul{
+      display: flex;
+      flex-direction: row;
+      padding: 20px;
+    }
+
+    #app ul li{
+      margin-right: 100px;
+      width: 100px;
+      text-align: center;
+      height: 20px;
+    }
+
+    #app ul:first-child li{
+      display: flex;
+      justify-content: space-evenly;
+    }
+
+  </style>
+</head>
+<body>
+  <div id="app">
+    <select name="" id="" v-model="selected">
+      <option value="">請選擇工作緊急程度</option>
+      <option value="高">高</option>
+      <option value="中">中</option>
+      <option value="低">低</option>
+    </select>
+    <input type="text" placeholder="請輸入工作事項" v-model="input">
+    <button @click="add" :disabled="disabledFull">送出</button>
+    <button @click="clear" :disabled="disabledHalf">清除</button>
+    <br>
+    <br>
+    <hr>
+    <hr>
+    <br>
+    <br>
+    <ul>
+      <li>
+        <label for="">
+          <input type="checkbox" @click="changeAll" v-model="checkedAll">
+        </label>
+      </li>
+      <li>緊急程度</li>
+      <li>工作內容</li>
+      <button @click="deleteAll" :disabled="deleteAllCheck">全部刪除</button>
+    </ul>
+    <br>
+      <ul v-for="(item,index) in works" :key="item.todo">
+        <li>
+          <label>
+            <input type="checkbox" name="" :value="item.todo" v-model="checkedArr">
+          </label>
+        </li>
+        <li 
+          :class="{ 'bgRed' :item.importance === '高', 'bgGreen':item.importance ==='中' , 'bgYellow': item.importance ==='低'}"
+        >
+        {{item.importance}}</li>
+        <li>{{item.todo}}</li>
+        <button @click="editStart(index)" v-show="!item.isEditing">修改工作內容</button>
+        <input type="text" :placeholder="item.todo" v-show="item.isEditing" v-model="editContent">
+        <button @click="editDone(index)" v-show="item.isEditing">修改完成</button>
+        <button @click="deleteWork(index)">刪除</button>
+        <br>
+        <br>
+      </ul>
+  </div>
+
+
+  <script>
+    new Vue({
+      el: '#app',
+      data:{
+        selected: '',
+        input: '',
+        checkedAll: false,
+        deleteAllCheck: false,
+        editContent: '',
+        checkedArr: [],
+        works:[
+          {
+            importance: '高',
+            todo: '網站測試',
+            // checked: false,
+            isEditing: false
+          },
+          {
+            importance: '中',
+            todo: '除錯',
+            // checked: false,
+            isEditing: false
+          },
+          {
+            importance: '低',
+            todo: '吃飯',
+            // checked: false,
+            isEditing: false,
+          }
+        ]
+      },
+      methods: {
+        add(){
+          let newWork = {};
+          newWork.importance = this.selected;
+          newWork.todo = this.input.trim();
+          newWork.isEditing = false;
+          this.works.push(newWork);
+          this.selected = '';
+          this.input = '';
+        },
+        clear(){
+          this.selected = '';
+          this.input = '';
+        },
+        // changeChecked(index){
+        //   this.works.map(item => {
+        //     if (item.index === index) {
+        //       item.checked = !item.checked
+        //     }
+        //   })
+        // },
+        changeAll(){
+          // this.works.map(item=>{
+          //   item.checked = !item.checked
+          // })
+          if (this.checkedAll) {//实现反选
+            this.checkedArr = [];
+          } else { //实现全选
+            this.checkedArr = [];
+            this.works.forEach((item) => {
+              this.checkedArr.push(item.todo);
+            });
+          }
+        },
+        deleteWork(index){
+          this.works.splice(index,1)
+        },
+        deleteAll(){
+          this.works=[]
+        },
+        editStart(index){
+          this.works[index].isEditing = true;
+        },
+        editDone(index){
+          this.works[index].isEditing = false;
+          if (this.editContent) {
+            this.works[index].todo = this.editContent;
+          }else{
+            this.works[index].todo = this.works[index].todo
+          }
+          this.editContent = '';
+        }
+      },
+      computed:{
+        disabledFull(){
+          if(this.input !== '' && this.selected !== ''){ 
+            return false;
+          }else{
+            return true;
+          }
+        },
+        disabledHalf(){
+          if(this.selected !== '' || this.input !== ''){
+            return false;
+          }else{
+            return true;
+          }
+        }
+      },
+      watch:{
+          'checkedArr': function(){
+            if(this.works.length === this.checkedArr.length){
+              this.checkedAll =  true
+            }else{
+              this.checkedAll = false
+            }
+          },
+          'works': function(){
+            if(this.works.length === 0){
+              this.deleteAllCheck = true
+            }else{
+              this.deleteAllCheck = false
+            }
+          }
+      }
+    })
+  </script>
+</body>
+</html>
