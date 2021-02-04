@@ -125,19 +125,16 @@
           {
             importance: '高',
             todo: '網站測試',
-            // checked: false,
             isEditing: false
           },
           {
             importance: '中',
             todo: '除錯',
-            // checked: false,
             isEditing: false
           },
           {
             importance: '低',
             todo: '吃飯',
-            // checked: false,
             isEditing: false,
           }
         ]
@@ -156,20 +153,10 @@
           this.selected = '';
           this.input = '';
         },
-        // changeChecked(index){
-        //   this.works.map(item => {
-        //     if (item.index === index) {
-        //       item.checked = !item.checked
-        //     }
-        //   })
-        // },
         changeAll(){
-          // this.works.map(item=>{
-          //   item.checked = !item.checked
-          // })
-          if (this.checkedAll) {//实现反选
+          if (this.checkedAll) {
             this.checkedArr = [];
-          } else { //实现全选
+          } else {
             this.checkedArr = [];
             this.works.forEach((item) => {
               this.checkedArr.push(item.todo);
