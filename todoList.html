@@ -106,7 +106,7 @@
           </label>
         </li>
         <li 
-          :class="{ 'bgRed' :item.importance === '高', 'bgGreen':item.importance ==='中' , 'bgYellow': item.importance ==='低'}"
+          :class="[item.importance === '高' ? 'bgRed' : item.importance === '中' ? 'bgGreen' : 'bgYellow']"
         >
         {{item.importance}}</li>
         <li>{{item.todo}}</li>
@@ -186,12 +186,6 @@
             }
             this.checkedArr = []
           }
-          // coo = this.checkedArr.filter((item) => {
-          //   return item
-          // })
-          // for(let i=0;i<coo.length;i++){
-          //   console.log(coo[i]);
-          // }
         },
         deleteAll(){
           this.works.splice(0,this.works.length)
@@ -208,20 +202,6 @@
           }
           this.editContent = '';
         },
-        // filterImportance(value){
-        //   console.log(this.filtered);
-        //   let arr = this.works.filter(function (item) {
-        //     if (value === 'all') {
-        //       return item;
-        //     }
-        //     return item.importance === value;
-        //   })
-        //   let filterRender = function(arr){
-        //     this.works = arr
-        //     console.log(this.works);
-        //   }
-        //   filterRender(arr)
-        // }
       },
       computed:{
         disabledFull(){
@@ -248,14 +228,7 @@
               return item.importance === filterOption;
             });
           }
-        },
-        // deleteAllCheck(){
-        //   if (this.works.length > 0) {
-        //     return false
-        //   } else {
-        //     return true
-        //   }
-        // }
+        }
       },
       watch:{
           'checkedArr': function(){
