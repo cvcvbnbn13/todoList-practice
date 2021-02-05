@@ -11,7 +11,6 @@
       padding: 0;
       list-style: none;
       font-weight: bold;
-      text-align: center;
     }
     html,body{
       width: 100%;
@@ -28,7 +27,7 @@
     .bgGreen,
     .bgYellow{
       border-radius: 30px;
-      color: #fff;
+      box-shadow: 3px 3px 1px 0 rgba(0, 0, 0, 0.5);
     }
     .bgRed{
       background-color: red;
@@ -46,6 +45,7 @@
       display: flex;
       flex-direction: row;
       padding: 20px;
+      text-align: center;
     }
 
     #app ul li{
@@ -65,7 +65,7 @@
 <body>
   <div id="app">
     <select name="" id="" v-model="selected">
-      <option value="">請選擇工作緊急程度</option>
+      <option value="">請選擇工作重要程度</option>
       <option value="高">高</option>
       <option value="中">中</option>
       <option value="低">低</option>
@@ -79,21 +79,30 @@
     <hr>
     <br>
     <br>
+    <select name="" id="filterImportance" v-model="filtered">
+      <option value="" disabled>請篩選工作重要程度</option>
+      <option value="all">全部</option>
+      <option value="高">高</option>
+      <option value="中">中</option>
+      <option value="低">低</option>
+    </select>
     <ul>
       <li>
         <label for="">
-          <input type="checkbox" @click="changeAll" v-model="checkedAll">
+          <input type="checkbox" @click="changeAll" v-model="checkedAll" :disabled="deleteAllCheck">
+          全選
         </label>
       </li>
-      <li>緊急程度</li>
+      <li>重要程度</li>
       <li>工作內容</li>
       <button @click="deleteAll" :disabled="deleteAllCheck">全部刪除</button>
+      <button @click="deleteChecked" :disabled="deleteAllCheck">刪除勾選項目</button>
     </ul>
     <br>
-      <ul v-for="(item,index) in works" :key="item.todo">
+      <ul v-for="(item,index) in filteredImports" :key="item.todo">
         <li>
           <label>
-            <input type="checkbox" name="" :value="item.todo" v-model="checkedArr">
+            <input type="checkbox" :value="item.todo" v-model="checkedArr" @click="checkedSingle">
           </label>
         </li>
         <li 
@@ -116,6 +125,7 @@
       el: '#app',
       data:{
         selected: '',
+        filtered: 'all',
         input: '',
         checkedAll: false,
         deleteAllCheck: false,
@@ -135,7 +145,7 @@
           {
             importance: '低',
             todo: '吃飯',
-            isEditing: false,
+            isEditing: false
           }
         ]
       },
@@ -153,12 +163,15 @@
           this.selected = '';
           this.input = '';
         },
+        checkedSingle(e){
+          // console.log(e.currentTarget.checked);
+        },
         changeAll(){
           if (this.checkedAll) {
             this.checkedArr = [];
           } else {
             this.checkedArr = [];
-            this.works.forEach((item) => {
+            this.works.map((item) => {
               this.checkedArr.push(item.todo);
             });
           }
@@ -166,8 +179,22 @@
         deleteWork(index){
           this.works.splice(index,1)
         },
+        deleteChecked(){
+          for(let i=0;i<this.works.length;i++){
+            if(this.checkedArr.indexOf(this.works[i].todo) > -1 ){
+              this.works.splice(i,this.checkedArr.length)
+            }
+            this.checkedArr = []
+          }
+          // coo = this.checkedArr.filter((item) => {
+          //   return item
+          // })
+          // for(let i=0;i<coo.length;i++){
+          //   console.log(coo[i]);
+          // }
+        },
         deleteAll(){
-          this.works=[]
+          this.works.splice(0,this.works.length)
         },
         editStart(index){
           this.works[index].isEditing = true;
@@ -180,7 +207,21 @@
             this.works[index].todo = this.works[index].todo
           }
           this.editContent = '';
-        }
+        },
+        // filterImportance(value){
+        //   console.log(this.filtered);
+        //   let arr = this.works.filter(function (item) {
+        //     if (value === 'all') {
+        //       return item;
+        //     }
+        //     return item.importance === value;
+        //   })
+        //   let filterRender = function(arr){
+        //     this.works = arr
+        //     console.log(this.works);
+        //   }
+        //   filterRender(arr)
+        // }
       },
       computed:{
         disabledFull(){
@@ -196,7 +237,25 @@
           }else{
             return true;
           }
-        }
+        },
+        filteredImports() {
+          let filterOption = this.filtered;
+
+          if (filterOption === "all") {
+            return this.works;
+          } else {
+            return this.works.filter(function (item) {
+              return item.importance === filterOption;
+            });
+          }
+        },
+        // deleteAllCheck(){
+        //   if (this.works.length > 0) {
+        //     return false
+        //   } else {
+        //     return true
+        //   }
+        // }
       },
       watch:{
           'checkedArr': function(){
